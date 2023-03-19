@@ -19,8 +19,6 @@ use crate::data::Storage;
 use crate::data::UserState;
 use crate::utils::generate_rand_string;
 
-pub static DELAY_DIFFERENCE: u64 = 5;
-
 pub struct QueryRoot;
 
 #[Object]
@@ -65,7 +63,7 @@ impl QueryRoot {
                                         || userstate
                                             .position_secs
                                             .abs_diff(userstate2.position_secs)
-                                            > DELAY_DIFFERENCE
+                                            > room.delay_difference_secs
                                 } else {
                                     false
                                 }
@@ -159,6 +157,7 @@ impl MutationRoot {
         ctx: &Context<'_>,
         user_id: String,
         user_name: String,
+        delay_difference_secs: u64,
     ) -> Result<String, async_graphql::Error> {
         let data = ctx.data::<Storage>()?;
         let rooms = &data.private_rooms;
@@ -174,6 +173,7 @@ impl MutationRoot {
                         id: user_id,
                         name: user_name,
                     },
+                    delay_difference_secs,
                 ),
             );
             Ok(room_id)

@@ -14,6 +14,7 @@ pub struct Storage {
 #[graphql(complex)]
 pub struct Room {
     pub id: String,
+    pub delay_difference_secs: u64,
     pub users: Vec<LobbyPlayer>,
 }
 
@@ -25,8 +26,12 @@ impl Room {
 }
 
 impl Room {
-    pub fn new(id: String, player: Player) -> Self {
-        Self { id, users: vec![] }
+    pub fn new(id: String, player: Player, delay_difference_secs: u64) -> Self {
+        Self {
+            id,
+            users: vec![],
+            delay_difference_secs,
+        }
     }
 }
 
