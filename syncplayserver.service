@@ -1,0 +1,13 @@
+[Unit]
+Description=syncplay server
+After=network.target
+
+[Service]
+User=deep
+WorkingDirectory=/home/deep/syncplay
+Environment="PORT=9341"
+ExecStart=/home/deep/syncplay/syncplayserver
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
