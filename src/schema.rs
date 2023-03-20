@@ -204,9 +204,15 @@ impl MutationRoot {
         };
 
         room.broadcast(ServerResponse::PlayerJoined(PlayerJoined {
-            player,
+            player: player.clone(),
 
             room: room.clone(),
+        }))
+        .await;
+        room.broadcast(ServerResponse::ChatMessage(ChatMessage {
+            message: format!("{} Joined", player.name),
+            player: player,
+            color: Some("#00FF00".into()),
         }))
         .await;
         Ok(room_id)
@@ -237,11 +243,17 @@ impl MutationRoot {
 
         room.clone()
             .broadcast(ServerResponse::PlayerRemoved(PlayerRemoved {
-                player,
+                player: player.clone(),
 
                 room: room.clone(),
             }))
             .await;
+        room.broadcast(ServerResponse::ChatMessage(ChatMessage {
+            message: format!("{} Removed", player.name),
+            player: player.clone(),
+            color: Some("#FF0000".into()),
+        }))
+        .await;
         Ok("Disconnected".into())
     }
 
@@ -268,8 +280,12 @@ impl MutationRoot {
             (room.clone(), player.player)
         };
 
-        room.broadcast(ServerResponse::ChatMessage(ChatMessage { player, message }))
-            .await;
+        room.broadcast(ServerResponse::ChatMessage(ChatMessage {
+            player,
+            message,
+            color: None,
+        }))
+        .await;
         Ok("Sucess".into())
     }
 }
@@ -308,6 +324,12 @@ impl Subscription {
                 room: room.clone(),
             }))
             .await;
+        room.broadcast(ServerResponse::ChatMessage(ChatMessage {
+            message: format!("{} Connected", player.name),
+            player: player.clone(),
+            color: Some("#00FF00".into()),
+        }))
+        .await;
         let player_dis = PlayerDisconnected {
             player,
             receiver_stream: rx,
@@ -368,6 +390,12 @@ impl Drop for PlayerDisconnected {
                             room: room.clone(),
                         }))
                         .await;
+                    room.broadcast(ServerResponse::ChatMessage(ChatMessage {
+                        message: format!("{} Left", player.name),
+                        player: player.clone(),
+                        color: Some("#FF0000".into()),
+                    }))
+                    .await;
                 }
             }
         });

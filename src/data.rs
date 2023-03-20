@@ -218,6 +218,7 @@ pub struct PlayerRemoved {
 pub struct ChatMessage {
     pub player: Player,
     pub message: String,
+    pub color: Option<String>,
 }
 
 #[derive(Serialize, Union, Clone)]
