@@ -26,6 +26,28 @@ jobs:
         shared-key: "syncserver"
     - name: Build
       run: cargo build --release
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v2
+
+    - name: Build Docker image
+      run: |
+        docker build -t syncplayer:latest .
+
+    - name: Save Docker image to a .tar file
+      run: |
+        docker save syncplayer:latest -o syncplayer.tar
+
+    - name: Compress .tar file to .tar.gz
+      run: |
+        gzip syncplayer.tar
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: syncplayer-docker-image
+        path: syncplayer.tar.gz
+        
     - name: Release
       uses: softprops/action-gh-release@v1
       if: startsWith(github.ref, 'refs/tags/')
